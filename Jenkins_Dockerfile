@@ -1,0 +1,26 @@
+# Dockerfile is used to deploy the Docker environment in the top of Jenkins images.
+
+# Author: Venkatesh.L
+
+# Use the Jenkins latet base version
+FROM jenkins/jenkins:lts
+
+# Create the root user
+USER root
+
+# Install the Docker and its dependency packages.
+RUN apt-get -y update && apt-get -y install apt-transport-https ca-certificates curl gnupg2 software-properties-common vim net-tools && \
+    curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | apt-key add - && \
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
+   $(lsb_release -cs) stable" && apt-get -y update && apt-get -y install docker-ce
+
+WORKDIR /tmp
+
+# Install the Maven package
+RUN apt -y install maven
+
+# Main web interface
+EXPOSE 8080
+
+# will be using by attached slave agents
+EXPOSE 50000
